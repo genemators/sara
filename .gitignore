@@ -130,3 +130,9 @@ dmypy.json
 
 # IDEA configurations
 .idea
+
+# Token Pickles
+token.pickle
+
+# Credentials
+credentials.json

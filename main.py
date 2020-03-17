@@ -186,10 +186,20 @@ def get_events(day, service):
     events = events_result.get('items', [])
 
     if not events:
-        print('No upcoming events found.')
-    for event in events:
-        start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
+        speak('No upcoming events found.')
+    else:
+        speak(f"You have {len(events)} events on this day.")
+        for event in events:
+            start = event['start'].get('dateTime', event['start'].get('date'))
+            print(start, event['summary'])
+            start_time = str(start.split("T")[1].split("-")[0])
+            if int(start_time.split(":")[0]) < 12:
+                start_time = start_time + "am"
+            else:
+                start_time = str(int(start_time.split(":")[0]) - 12)
+                start_time = start_time + "pm"
+
+            speak(event["summary"] + " at " + start_time)
 
 
 def get_date(text):
@@ -248,37 +258,13 @@ def get_date(text):
 # Used to make assistant save notes
 #
 
-def note(note_string):
-    date = "03:17:2020"
+def note(text):
+    date = datetime.datetime.now()
     file_name = str(date).replace(":", "-") + "-note.txt"
     with open(file_name, "w") as f:
-        f.write(note_string)
+        f.write(text)
 
     subprocess.Popen(["notepad.exe", file_name])
-
-
-#
-# The Telegram Function
-# Used to make assistant open Telegram Application
-#
-
-def open_telegram():
-    telegram_application = 'start telegram desktop'
-    subprocess.run([telegram_application], shell=True)
-
-
-def close_telegram():
-    subprocess.run('Taskkill /IM Telegram Desktop.exe /F', shell=True)
-
-
-#
-# The Mail Function
-# Used to make assistant Mail Application
-#
-
-def mail():
-    mail_application = "*"
-    subprocess.Popen([mail_application])
 
 
 #
@@ -286,7 +272,6 @@ def mail():
 #
 
 def main():
-
     #
     # Letting the bot to introduce himself
     #
@@ -299,9 +284,25 @@ def main():
     #
 
     service = authenticate_google()
-    text = get_audio()
-    get_events(get_date(text), service)
+    print("Start")
+    text = get_audio().lower()
 
+    CALENDAR_STRS = ["what do i have", "do i have plans", "am i busy"]
+    for phrase in CALENDAR_STRS:
+        if phrase in text:
+            date = get_date(text)
+            if date:
+                get_events(get_date(text), service)
+            else:
+                speak("Please try again")
+
+    NOTE_STRS = ["make a note", "write this down", "remember this"]
+    for phrase in NOTE_STRS:
+        if phrase in text:
+            speak("What would you like me to write down?")
+            note_text = get_audio().lower()
+            note(note_text)
+            speak("I've created the note file.")
 
     #
     # There begins our logic
@@ -323,15 +324,6 @@ def main():
         news_website_url = "https://review.uz"
         speak("Opening fresh news page")
         webbrowser.open(news_website_url)
-
-    # Saving notes with Sara
-    NOTE_STR = ["make a note", "write this down", "remember this"]
-    for phrase in NOTE_STR:
-        if phrase in text:
-            speak("What would you like me to save?")
-            note_text = get_audio().lower()
-            note(note_text)
-            speak("I saved your notes")
 
 
 if __name__ == '__main__':

@@ -119,7 +119,7 @@ def get_audio():
         except Exception as e:
             print("Exception " + str(e))
 
-    return said
+    return said.lower()
 
 
 #
@@ -196,7 +196,7 @@ def get_events(day, service):
             if int(start_time.split(":")[0]) < 12:
                 start_time = start_time + "am"
             else:
-                start_time = str(int(start_time.split(":")[0]) - 12)
+                start_time = str(int(start_time.split(":")[0]) - 12) + start_time.split(":")[1]
                 start_time = start_time + "pm"
 
             speak(event["summary"] + " at " + start_time)
@@ -282,48 +282,55 @@ def main():
     #
     # Converting input to string variable and saving as variable
     #
-
+    WAKE = "hey sara"
     service = authenticate_google()
     print("Start")
-    text = get_audio().lower()
 
-    CALENDAR_STRS = ["what do i have", "do i have plans", "am i busy"]
-    for phrase in CALENDAR_STRS:
-        if phrase in text:
-            date = get_date(text)
-            if date:
-                get_events(get_date(text), service)
-            else:
-                speak("Please try again")
+    while True:
+        print("Listening")
+        text = get_audio()
 
-    NOTE_STRS = ["make a note", "write this down", "remember this"]
-    for phrase in NOTE_STRS:
-        if phrase in text:
-            speak("What would you like me to write down?")
-            note_text = get_audio().lower()
-            note(note_text)
-            speak("I've created the note file.")
+        if text.count(WAKE) > 0:
+            speak("I am ready oni chan!")
+            text = get_audio()
 
-    #
-    # There begins our logic
-    #
+            CALENDAR_STRS = ["what do i have", "do i have plans", "am i busy"]
+            for phrase in CALENDAR_STRS:
+                if phrase in text:
+                    date = get_date(text)
+                    if date:
+                        get_events(get_date(text), service)
+                    else:
+                        speak("I don't understand")
 
-    # Just ordinary speech to speech responses
-    if "hello" in text:
-        speak("Hello, how are you?")
+            NOTE_STRS = ["make a note", "write this down", "remember this"]
+            for phrase in NOTE_STRS:
+                if phrase in text:
+                    speak("What would you like me to write down?")
+                    note_text = get_audio()
+                    note(note_text)
+                    speak("I've created the note file.")
 
-    if "what is your name" in text:
-        speak("My name is Sara")
+            #
+            # There begins our logic
+            #
 
-    if "anime" in text:
-        anime_website_url = "https://mover.uz/video/anime/"
-        speak("Opening animes in browser")
-        webbrowser.open(anime_website_url)
+            # Just ordinary speech to speech responses
+            if "hello" in text:
+                speak("Hello, how are you?")
 
-    if "news" in text:
-        news_website_url = "https://review.uz"
-        speak("Opening fresh news page")
-        webbrowser.open(news_website_url)
+            if "what is your name" in text:
+                speak("My name is Sara")
+
+            if "anime" in text:
+                anime_website_url = "https://mover.uz/video/anime/"
+                speak("Opening animes in browser")
+                webbrowser.open(anime_website_url)
+
+            if "news" in text:
+                news_website_url = "https://review.uz"
+                speak("Opening fresh news page")
+                webbrowser.open(news_website_url)
 
 
 if __name__ == '__main__':

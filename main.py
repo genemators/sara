@@ -52,7 +52,8 @@ try:
     from googleapiclient.discovery import build
     from google_auth_oauthlib.flow import InstalledAppFlow
     from google.auth.transport.requests import Request
-
+    import pyttsx3
+    import pytz
 #
 # Ending import section and if error occurs
 # It will be consoled with explanation
@@ -63,6 +64,32 @@ except ImportError as e:
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
+MONTHS = ["january",
+          "february",
+          "march",
+          "april",
+          "may",
+          "june",
+          "july",
+          "august",
+          "september",
+          "october",
+          "november",
+          "december"]
+
+DAYS = ["monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"]
+
+DAYS_EXTENSIONS = ["st",
+                   "nd",
+                   "rd",
+                   "th"]
+
 
 #
 # The Speak Function
@@ -70,11 +97,9 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 #
 
 def speak(text):
-    tts = gTTS(text=text, lang="en")
-    filename = "voice.mp3"
-    tts.save(filename)
-    playsound.playsound(filename)
-    os.remove(filename)
+    engine = pyttsx3.init()
+    engine.say(text)
+    engine.runAndWait()
 
 
 #
@@ -144,15 +169,19 @@ def authenticate_google():
 # Used to make assistant authenticate user to google
 #
 
-def get_events(n, service):
+def get_events(day, service):
     #
     # Call the Calendar API
     #
 
-    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-    print(f'Getting the upcoming {n} events')
-    events_result = service.events().list(calendarId='primary', timeMin=now,
-                                          maxResults=n, singleEvents=True,
+    date = datetime.datetime.combine(day, datetime.datetime.min.time())
+    end_date = datetime.datetime.combine(day, datetime.datetime.max.time())
+    utc = pytz.UTC
+    date = date.astimezone(utc)
+    end_date = end_date.astimezone(utc)
+
+    events_result = service.events().list(calendarId='primary', timeMin=date.isoformat(), timeMax=end_date.isoformat(),
+                                          singleEvents=True,
                                           orderBy='startTime').execute()
     events = events_result.get('items', [])
 
@@ -161,6 +190,57 @@ def get_events(n, service):
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(start, event['summary'])
+
+
+def get_date(text):
+    text = text.lower()
+    today = datetime.date.today()
+
+    if text.count("today") > 0:
+        return today
+
+    day = -1
+    day_of_week = -1
+    month = -1
+    year = today.year
+
+    for word in text.split():
+        if word in MONTHS:
+            month = MONTHS.index(word) + 1
+        elif word in DAYS:
+            day_of_week = DAYS.index(word)
+        elif word.isdigit():
+            day = int(word)
+        else:
+            for ext in DAYS_EXTENSIONS:
+                found = word.find(ext)
+                if found > 0:
+                    try:
+                        day = int(word[:found])
+                    except:
+                        pass
+
+    if month < today.month and month != -1:
+        year = year + 1
+
+    if day < today.day and month == -1 and day != -1:
+        month = month + 1
+
+    if month == -1 and day == -1 and day_of_week != -1:
+        current_day_of_week = today.weekday()
+        dif = day_of_week - current_day_of_week
+
+        if dif < 0:
+            dif += 7
+            if text.count("next") >= 1:
+                dif += 7
+
+        return today + datetime.timedelta(dif)
+
+    if month == -1 or day == -1:
+        return None
+
+    return datetime.date(month=month, day=day, year=year)
 
 
 #
@@ -206,6 +286,7 @@ def mail():
 #
 
 def main():
+
     #
     # Letting the bot to introduce himself
     #
@@ -216,9 +297,11 @@ def main():
     #
     # Converting input to string variable and saving as variable
     #
+
     service = authenticate_google()
-    get_events(2, service)
     text = get_audio()
+    get_events(get_date(text), service)
+
 
     #
     # There begins our logic

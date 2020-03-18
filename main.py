@@ -346,6 +346,7 @@ def get_date(text):
 #
 
 def note(text):
+
     date = datetime.datetime.now()
     file_name = str(date).replace(":", "-") + "-note.txt"
     with open(file_name, "w") as f:
@@ -375,6 +376,7 @@ def main():
     # Make the assistant wait for waking word to be pronounced by user
     # Converting input to string variable and saving as variable
     #
+
     WAKE = "hey sarah"
     service = authenticate_google()
     print("Start")
@@ -383,9 +385,22 @@ def main():
         print("Listening")
         text = get_audio()
 
+        #
+        # If users pronounces the wake word
+        # Bot will state that she's ready!
+        #
+
         if text.count(WAKE) > 0:
             speak("I am ready oni chan!")
             text = get_audio()
+
+            #
+            # And there she starts to listen the user
+            #
+
+            #
+            # Calendar event detector
+            #
 
             CALENDAR_STRS = ["what do i have", "do i have plans", "am i busy"]
             for phrase in CALENDAR_STRS:
@@ -396,6 +411,10 @@ def main():
                     else:
                         speak("I don't understand")
 
+            #
+            # Note saver function
+            #
+
             NOTE_STRS = ["make a note", "write this down", "remember this"]
             for phrase in NOTE_STRS:
                 if phrase in text:
@@ -405,26 +424,45 @@ def main():
                     speak("I've created the note file.")
 
             #
-            # There begins our logic
+            # There begins our own logic
+            # Just ordinary speech to speech responses
             #
 
-            # Just ordinary speech to speech responses
+            #
+            # If user says hello, bot will response for it
+            #
+
             if "hello" in text:
                 speak("Hello, how are you?")
 
+            #
+            # If user asks for bot's name, bot will response for it
+            #
+
             if "what is your name" in text:
                 speak("My name is Sara")
+
+            #
+            # If user says anime, bot will open anime in browser
+            #
 
             if "anime" in text:
                 anime_website_url = "https://mover.uz/video/anime/"
                 speak("Opening animes in browser")
                 webbrowser.open(anime_website_url)
 
+            #
+            # If bot is asked to show some news, bot will launch browser
+            #
+
             if "news" in text:
                 news_website_url = "https://review.uz"
                 speak("Opening fresh news page")
                 webbrowser.open(news_website_url)
 
+#
+# Loop cycling the application
+#
 
 if __name__ == '__main__':
     main()

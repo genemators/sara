@@ -8,8 +8,11 @@ STATUS: Rolling
 #
 # Starting import process here
 #
+
+# Global scopic functions
 from __future__ import print_function
 
+# Installed modules
 try:
     print('Importing "os" Module')
     import os
@@ -46,14 +49,46 @@ try:
 
     print('"webbrowser" Module import completed successfully')
 
+    print('Importing "datetime" Module')
     import datetime
+
+    print('"datetime" Module import completed successfully')
+
+    print('Importing "pickle" Module')
     import pickle
+
+    print('"pickle" Module import completed successfully')
+
+    print('Importing "os.path" Module')
     import os.path
+
+    print('"os.path" Module import completed successfully')
+
+    print('Importing "googleapiclient.discovery" Module')
     from googleapiclient.discovery import build
+
+    print('"googleapiclient.discovery" Module import completed successfully')
+
+    print('Importing "google_auth_oauthlib.flow" Module')
     from google_auth_oauthlib.flow import InstalledAppFlow
+
+    print('"google_auth_oauthlib.flow" Module import completed successfully')
+
+    print('Importing "google.auth.transport.requests" Module')
     from google.auth.transport.requests import Request
+
+    print('"google.auth.transport.requests" Module import completed successfully')
+
+    print('Importing "pyttsx3" Module')
     import pyttsx3
+
+    print('"pyttsx3" Module import completed successfully')
+
+    print('Importing "pytz" Module')
     import pytz
+
+    print('"pytz" Module import completed successfully')
+
 #
 # Ending import section and if error occurs
 # It will be consoled with explanation
@@ -98,8 +133,13 @@ DAYS_EXTENSIONS = ["st",
 
 def speak(text):
     engine = pyttsx3.init()
+    engine.setProperty('rate', 130)
+    engine.setProperty('volume', 1)
+    Sarah = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_EN-US_ZIRA_11.0"
+    engine.setProperty('voice', Sarah)
     engine.say(text)
     engine.runAndWait()
+    pass
 
 
 #
@@ -282,7 +322,7 @@ def main():
     #
     # Converting input to string variable and saving as variable
     #
-    WAKE = "hey sara"
+    WAKE = "hey sarah"
     service = authenticate_google()
     print("Start")
 

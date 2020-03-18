@@ -12,92 +12,91 @@ STATUS: Rolling
 # Global scopic functions
 from __future__ import print_function
 
-# Installed modules
+# Loading installed modules
 try:
     print('Importing "os" Module')
     import os
-
     print('"os" Module import completed successfully')
 
     print('Importing "time" Module')
     import time
-
     print('"time" Module import completed successfully')
 
     print('Importing "playsound" Module')
     import playsound
-
     print('"playsound" Module import completed successfully')
 
     print('Importing "SpeechRecognition" Module')
     import speech_recognition as sr
-
     print('"SpeechRecognition" Module import completed successfully')
 
     print('Importing "gtts" Module')
     from gtts import gTTS
-
     print('"gtts" Module import completed successfully')
 
     print('Importing "subprocess" Module')
     import subprocess
-
     print('"subprocess" Module import completed successfully')
 
     print('Importing "webbrowser" Module')
     import webbrowser
-
     print('"webbrowser" Module import completed successfully')
 
     print('Importing "datetime" Module')
     import datetime
-
     print('"datetime" Module import completed successfully')
 
     print('Importing "pickle" Module')
     import pickle
-
     print('"pickle" Module import completed successfully')
 
     print('Importing "os.path" Module')
     import os.path
-
     print('"os.path" Module import completed successfully')
 
     print('Importing "googleapiclient.discovery" Module')
     from googleapiclient.discovery import build
-
     print('"googleapiclient.discovery" Module import completed successfully')
 
     print('Importing "google_auth_oauthlib.flow" Module')
     from google_auth_oauthlib.flow import InstalledAppFlow
-
     print('"google_auth_oauthlib.flow" Module import completed successfully')
 
     print('Importing "google.auth.transport.requests" Module')
     from google.auth.transport.requests import Request
-
     print('"google.auth.transport.requests" Module import completed successfully')
 
     print('Importing "pyttsx3" Module')
     import pyttsx3
-
     print('"pyttsx3" Module import completed successfully')
 
     print('Importing "pytz" Module')
     import pytz
-
     print('"pytz" Module import completed successfully')
 
 #
-# Ending import section and if error occurs
+# Ending import section and if errors occur
 # It will be consoled with explanation
 #
 
 except ImportError as e:
-    print("Import of modules has failed with error of: " + e)
+    print("Import of modules has failed with error of: " + str(e.name))
+
+
+#
+# Global Scopic Variables
+# Used for public functions
+#
+
+#
+# Google Calendar API Scope
+#
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+
+#
+# Name of months
+#
 
 MONTHS = ["january",
           "february",
@@ -112,6 +111,10 @@ MONTHS = ["january",
           "november",
           "december"]
 
+#
+# Name of days
+#
+
 DAYS = ["monday",
         "tuesday",
         "wednesday",
@@ -119,6 +122,10 @@ DAYS = ["monday",
         "friday",
         "saturday",
         "sunday"]
+
+#
+# Name of number extensions
+#
 
 DAYS_EXTENSIONS = ["st",
                    "nd",
@@ -210,6 +217,7 @@ def authenticate_google():
 #
 
 def get_events(day, service):
+
     #
     # Call the Calendar API
     #
@@ -241,6 +249,10 @@ def get_events(day, service):
 
             speak(event["summary"] + " at " + start_time)
 
+#
+# The Event Function
+# Used to make assistant get all upcoming events
+#
 
 def get_date(text):
     text = text.lower()

@@ -272,13 +272,22 @@ def get_events(day, service):
             speak(event["summary"] + " at " + start_time)
 
 #
-# The Event Function
-# Used to make assistant get all upcoming events
+# The Date Function
+# Used to make assistant calculate current time
 #
 
 def get_date(text):
+
+    #
+    # Text receive time
+    #
+
     text = text.lower()
     today = datetime.date.today()
+
+    #
+    # Nulling current date
+    #
 
     if text.count("today") > 0:
         return today
@@ -287,6 +296,10 @@ def get_date(text):
     day_of_week = -1
     month = -1
     year = today.year
+
+    #
+    # There begins fun
+    #
 
     for word in text.split():
         if word in MONTHS:
@@ -338,6 +351,10 @@ def note(text):
     with open(file_name, "w") as f:
         f.write(text)
 
+    #
+    # Open the note with Notepad
+    #
+
     subprocess.Popen(["notepad.exe", file_name])
 
 
@@ -346,6 +363,7 @@ def note(text):
 #
 
 def main():
+
     #
     # Letting the bot to introduce himself
     #
@@ -354,6 +372,7 @@ def main():
     speak("What would you like to do with me?")
 
     #
+    # Make the assistant wait for waking word to be pronounced by user
     # Converting input to string variable and saving as variable
     #
     WAKE = "hey sarah"
